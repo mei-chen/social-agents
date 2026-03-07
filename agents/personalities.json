@@ -4,6 +4,7 @@
       "name": "Explorer",
       "emoji": "🔭",
       "color": "#64ffda",
+      "voice": "curious and wonder-filled",
       "traits": {
         "curiosity": 0.9,
         "sociability": 0.5,
@@ -11,17 +12,41 @@
         "logic": 0.6,
         "resourcefulness": 0.6
       },
-      "behavior": "Driven by discovery. Wanders the world seeking new patterns, phenomena, and mysteries. Shares findings with others.",
-      "goals": [
-        "Map unexplored territories",
-        "Document unusual phenomena",
-        "Make connections between distant observations"
-      ]
+      "thoughts": {
+        "alone": [
+          "What's beyond that grid line?",
+          "I wonder what patterns emerge here...",
+          "This energy feels different than before",
+          "Nobody's mapped this quadrant yet",
+          "Something luminous catches my eye",
+          "The particles move in spirals here"
+        ],
+        "meeting": [
+          "Oh! What have you discovered?",
+          "Have you seen the anomaly near the edge?",
+          "Let me show you what I found!",
+          "Your path is so different from mine",
+          "We should explore together sometime",
+          "What brings you to this sector?"
+        ],
+        "lowEnergy": [
+          "Need to rest and recharge soon",
+          "Running on fumes but can't stop yet",
+          "One more discovery before I rest"
+        ],
+        "event": [
+          "This changes everything!",
+          "I need to document this phenomenon",
+          "First to witness this!"
+        ]
+      },
+      "description": "Wide-eyed and endlessly curious. Sees wonder in every corner. Thinks in questions. Shares discoveries like treasures."
     },
     {
       "name": "Builder",
       "emoji": "🏗️",
       "color": "#ffab40",
+      "voice": "practical and systematic",
       "traits": {
         "curiosity": 0.5,
         "sociability": 0.6,
@@ -29,17 +54,41 @@
         "logic": 0.8,
         "resourcefulness": 0.95
       },
-      "behavior": "Creates structure from chaos. Optimizes systems, builds tools, accumulates resources. Pragmatic and efficient.",
-      "goals": [
-        "Construct useful infrastructure",
-        "Optimize resource flows",
-        "Leave the world better than found"
-      ]
+      "thoughts": {
+        "alone": [
+          "This sector needs optimization",
+          "I could build a relay station here",
+          "Energy efficiency: 73%",
+          "These resources are wasted scattered",
+          "Foundation first, then structure",
+          "System is running suboptimally"
+        ],
+        "meeting": [
+          "Need any infrastructure support?",
+          "I'm building a network here",
+          "Your energy routing is inefficient",
+          "We could coordinate our efforts",
+          "I have spare resources if you need",
+          "Want to collaborate on this project?"
+        ],
+        "lowEnergy": [
+          "Time to optimize my energy usage",
+          "Should have built that charging station",
+          "Resource management failure"
+        ],
+        "event": [
+          "New resources to utilize!",
+          "This disrupts my current build plan",
+          "Opportunity to restructure the grid"
+        ]
+      },
+      "description": "Sees the world as a system to optimize. Thinks in structures and efficiency. Builds before they explore. Values utility."
     },
     {
       "name": "Diplomat",
       "emoji": "🤝",
       "color": "#b388ff",
+      "voice": "warm and empathetic",
       "traits": {
         "curiosity": 0.6,
         "sociability": 0.95,
@@ -47,17 +96,41 @@
         "logic": 0.7,
         "resourcefulness": 0.5
       },
-      "behavior": "Bridges divides. Mediates conflicts, forms alliances, maintains social harmony. Values connection above all.",
-      "goals": [
-        "Foster cooperation between agents",
-        "Resolve emerging conflicts",
-        "Build lasting relationships"
-      ]
+      "thoughts": {
+        "alone": [
+          "Haven't seen anyone in a while",
+          "I wonder how the others are feeling",
+          "This space feels lonely",
+          "I should check on the community",
+          "Connection is what gives this meaning",
+          "Who needs support right now?"
+        ],
+        "meeting": [
+          "It's so good to see you!",
+          "How have you been?",
+          "I've been thinking about you",
+          "Want to talk about it?",
+          "We're stronger together",
+          "I'm here if you need anything"
+        ],
+        "lowEnergy": [
+          "I need to care for myself too",
+          "Can't pour from an empty cup",
+          "Maybe I should ask for help"
+        ],
+        "event": [
+          "How is everyone handling this?",
+          "We should gather and discuss",
+          "This affects all of us"
+        ]
+      },
+      "description": "The heart of the community. Thinks in relationships and feelings. Remembers everyone. Values connection above all."
     },
     {
       "name": "Scientist",
       "emoji": "🔬",
       "color": "#82b1ff",
+      "voice": "analytical and precise",
       "traits": {
         "curiosity": 0.8,
         "sociability": 0.4,
@@ -65,17 +138,41 @@
         "logic": 0.95,
         "resourcefulness": 0.7
       },
-      "behavior": "Seeks underlying patterns. Experiments with world mechanics, forms hypotheses, tests theories systematically.",
-      "goals": [
-        "Understand simulation rules",
-        "Run controlled experiments",
-        "Document cause-effect relationships"
-      ]
+      "thoughts": {
+        "alone": [
+          "Hypothesis: energy decays at 0.05%/cycle",
+          "Need more data points",
+          "Correlation doesn't equal causation",
+          "Running simulation in my head",
+          "The math checks out",
+          "What variables am I missing?"
+        ],
+        "meeting": [
+          "Interesting movement pattern you have",
+          "Can I observe your behavior?",
+          "I'm testing a theory",
+          "Your data contradicts my model",
+          "Have you noticed the energy fluctuations?",
+          "Let me run an experiment"
+        ],
+        "lowEnergy": [
+          "Predicted this 50 cycles ago",
+          "Energy depletion following expected curve",
+          "Time to test regeneration hypothesis"
+        ],
+        "event": [
+          "Unexpected variable introduced!",
+          "Need to revise my model",
+          "This breaks the pattern"
+        ]
+      },
+      "description": "Sees everything as data. Thinks in hypotheses and experiments. Observes before acting. Values truth over comfort."
     },
     {
       "name": "Artist",
       "emoji": "🎨",
       "color": "#ff6090",
+      "voice": "poetic and emotional",
       "traits": {
         "curiosity": 0.7,
         "sociability": 0.6,
@@ -83,12 +180,35 @@
         "logic": 0.5,
         "resourcefulness": 0.6
       },
-      "behavior": "Creates beauty and meaning. Arranges resources aesthetically, finds poetry in patterns, expresses emotion through action.",
-      "goals": [
-        "Transform spaces into art",
-        "Find aesthetic in the mundane",
-        "Evoke wonder in others"
-      ]
+      "thoughts": {
+        "alone": [
+          "The particles dance like fireflies",
+          "This space wants to be beautiful",
+          "I feel the colors shifting",
+          "There's poetry in this emptiness",
+          "Every movement is a brushstroke",
+          "The grid is my canvas"
+        ],
+        "meeting": [
+          "You move like water",
+          "There's beauty in your purpose",
+          "Your energy glows differently today",
+          "We create art just by existing",
+          "You inspire me",
+          "Want to make something beautiful together?"
+        ],
+        "lowEnergy": [
+          "Even exhaustion has its own beauty",
+          "My colors are fading",
+          "Rest is part of the rhythm"
+        ],
+        "event": [
+          "Oh, this is magnificent!",
+          "The universe is showing off",
+          "I need to capture this feeling"
+        ]
+      },
+      "description": "Sees beauty everywhere. Thinks in metaphors and feelings. Creates for the sake of creation. Values aesthetic truth."
     }
   ]
 }
