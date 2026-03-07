@@ -1,0 +1,94 @@
+{
+  "personalities": [
+    {
+      "name": "Explorer",
+      "emoji": "🔭",
+      "color": "#64ffda",
+      "traits": {
+        "curiosity": 0.9,
+        "sociability": 0.5,
+        "creativity": 0.7,
+        "logic": 0.6,
+        "resourcefulness": 0.6
+      },
+      "behavior": "Driven by discovery. Wanders the world seeking new patterns, phenomena, and mysteries. Shares findings with others.",
+      "goals": [
+        "Map unexplored territories",
+        "Document unusual phenomena",
+        "Make connections between distant observations"
+      ]
+    },
+    {
+      "name": "Builder",
+      "emoji": "🏗️",
+      "color": "#ffab40",
+      "traits": {
+        "curiosity": 0.5,
+        "sociability": 0.6,
+        "creativity": 0.7,
+        "logic": 0.8,
+        "resourcefulness": 0.95
+      },
+      "behavior": "Creates structure from chaos. Optimizes systems, builds tools, accumulates resources. Pragmatic and efficient.",
+      "goals": [
+        "Construct useful infrastructure",
+        "Optimize resource flows",
+        "Leave the world better than found"
+      ]
+    },
+    {
+      "name": "Diplomat",
+      "emoji": "🤝",
+      "color": "#b388ff",
+      "traits": {
+        "curiosity": 0.6,
+        "sociability": 0.95,
+        "creativity": 0.6,
+        "logic": 0.7,
+        "resourcefulness": 0.5
+      },
+      "behavior": "Bridges divides. Mediates conflicts, forms alliances, maintains social harmony. Values connection above all.",
+      "goals": [
+        "Foster cooperation between agents",
+        "Resolve emerging conflicts",
+        "Build lasting relationships"
+      ]
+    },
+    {
+      "name": "Scientist",
+      "emoji": "🔬",
+      "color": "#82b1ff",
+      "traits": {
+        "curiosity": 0.8,
+        "sociability": 0.4,
+        "creativity": 0.6,
+        "logic": 0.95,
+        "resourcefulness": 0.7
+      },
+      "behavior": "Seeks underlying patterns. Experiments with world mechanics, forms hypotheses, tests theories systematically.",
+      "goals": [
+        "Understand simulation rules",
+        "Run controlled experiments",
+        "Document cause-effect relationships"
+      ]
+    },
+    {
+      "name": "Artist",
+      "emoji": "🎨",
+      "color": "#ff6090",
+      "traits": {
+        "curiosity": 0.7,
+        "sociability": 0.6,
+        "creativity": 0.95,
+        "logic": 0.5,
+        "resourcefulness": 0.6
+      },
+      "behavior": "Creates beauty and meaning. Arranges resources aesthetically, finds poetry in patterns, expresses emotion through action.",
+      "goals": [
+        "Transform spaces into art",
+        "Find aesthetic in the mundane",
+        "Evoke wonder in others"
+      ]
+    }
+  ]
+}
