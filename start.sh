@@ -1,7 +1,7 @@
 #!/bin/bash
 # Start the multi-agent simulation
 
-cd ~/clawd/projects/multiagent-sim/ui
+cd ~/clawd/projects/multiagent-sim
 
 # Find an available port
 PORT=18795

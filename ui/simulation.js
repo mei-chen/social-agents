@@ -16,7 +16,7 @@ class MultiAgentSimulation {
     
     async loadPersonalities() {
         try {
-            const response = await fetch('../agents/personalities.json');
+            const response = await fetch('/agents/personalities.json');
             const data = await response.json();
             this.personalities = data.personalities;
         } catch (error) {
