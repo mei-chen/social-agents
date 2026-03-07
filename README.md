@@ -1,33 +1,79 @@
-# Multi-Agent Simulation
+# Social Agents 🌍✨
 
-A visually stunning simulation where AI agents with distinct personalities interact in a shared world.
+A visually stunning multi-agent simulation where AI agents with distinct personalities interact in a shared world.
 
-## Architecture
+![Multi-Agent Simulation](https://img.shields.io/badge/status-live-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue)
 
-- **World Engine**: Simulated environment with resources, events, terrain
-- **Agents**: Sub-agents with unique personalities spawned via OpenClaw
-- **Visualization**: Real-time Canvas rendering with beautiful graphics
-- **Interaction**: Agents can communicate, cooperate, compete, form alliances
+## ✨ Features
 
-## Agent Personalities
+- **5 Unique Personalities**: Explorer 🔭, Builder 🏗️, Diplomat 🤝, Scientist 🔬, Artist 🎨
+- **Beautiful Visuals**: Particle effects, glowing agents, connection beams
+- **Real-time Interactions**: Agents meet, communicate, and form connections
+- **Energy Systems**: Dynamic behavior driven by resource management
+- **Event Triggers**: Spawn world events that affect all agents
+- **Emergent Patterns**: Watch complex social dynamics unfold
 
-1. **Explorer** - Curious, wanders, documents discoveries
-2. **Builder** - Resourceful, creates structures, optimizes
-3. **Diplomat** - Social, mediates conflicts, forms alliances
-4. **Scientist** - Analytical, experiments, seeks patterns
-5. **Artist** - Creative, aesthetic-driven, emotive
+## 🚀 Quick Start
 
-## World Features
+```bash
+git clone https://github.com/mei-chen/social-agents.git
+cd social-agents
+./start.sh
+```
 
-- Dynamic terrain (mountains, rivers, forests, cities)
-- Resources (energy, materials, knowledge)
-- Weather & time cycles
-- Emergent events
-- Beautiful particle effects and animations
+Then open http://localhost:18795 in your browser.
 
-## Tech Stack
+Or just open `ui/index.html` directly in any modern browser!
 
-- Canvas API for rendering
-- WebGL for effects
-- Sub-agent orchestration via OpenClaw
-- Real-time state sync
+## 🎮 Controls
+
+- **+ Spawn Agent**: Add new agents to the simulation
+- **⚡ Trigger Event**: Create world events (storms, discoveries, challenges)
+- **⏯ Pause/Resume**: Control simulation flow
+
+## 🎨 Visual Style
+
+- Cyberpunk-meets-cosmos aesthetic
+- Radial gradients & glow effects
+- Connection beams between nearby agents
+- Particle trails and energy rings
+- Semi-transparent UI with backdrop blur
+
+## 🧠 Agent Personalities
+
+Each agent has unique traits that drive their behavior:
+
+| Personality | Emoji | Primary Trait | Behavior |
+|------------|-------|---------------|----------|
+| Explorer | 🔭 | Curious | Wanders seeking discoveries |
+| Builder | 🏗️ | Resourceful | Creates structures & optimizes |
+| Diplomat | 🤝 | Social | Mediates & forms alliances |
+| Scientist | 🔬 | Analytical | Experiments & seeks patterns |
+| Artist | 🎨 | Creative | Creates beauty & meaning |
+
+## 🔮 Future Roadmap
+
+- [ ] Wire up real LLM sub-agents for genuine AI reasoning
+- [ ] Agent-to-agent messaging and dialogue
+- [ ] Persistent world state with save/load
+- [ ] Resource gathering and trading
+- [ ] Territory control and conflict resolution
+- [ ] 3D visualization with Three.js
+
+## 🛠 Tech Stack
+
+- Vanilla JavaScript + Canvas API
+- No dependencies - runs in any modern browser
+- Optional: OpenClaw integration for LLM-powered agents
+
+## 📜 License
+
+MIT
+
+## 🤝 Contributing
+
+Pull requests welcome! This is a living experiment in multi-agent dynamics.
+
+---
+
+Built with curiosity by [Mei Chen](https://github.com/mei-chen) & [Nix](https://agentnow.org)
