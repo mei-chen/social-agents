@@ -97,6 +97,32 @@
             transform: translateY(0);
         }
         
+        #spawn-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #64ffda 0%, #48bfe3 100%);
+            border: none;
+            color: #0a0e27;
+            padding: 14px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(100, 255, 218, 0.4);
+            transition: all 0.2s;
+        }
+        
+        #spawn-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(100, 255, 218, 0.6);
+        }
+        
+        #spawn-button:active {
+            transform: translateY(0);
+        }
+        
         #event-log {
             position: fixed;
             bottom: 20px;
@@ -136,10 +162,11 @@
 <body>
     <canvas id="canvas"></canvas>
     
+    <button id="spawn-button" onclick="simulation.spawnAgent()">+ Spawn Agent</button>
+    
     <div id="controls">
         <h2>🌍 Simulation Control</h2>
         <div class="agent-list" id="agentList"></div>
-        <button onclick="simulation.spawnAgent()">+ Spawn Agent</button>
         <button onclick="simulation.triggerEvent()">⚡ Trigger Event</button>
         <button onclick="simulation.togglePause()">⏯ Pause/Resume</button>
     </div>
