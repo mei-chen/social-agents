@@ -325,7 +325,8 @@ class MultiAgentSimulation {
     }
     
     handleRomanticInteraction(a1, a2, dist) {
-        if (a1.lastMet === a2.id || Math.random() > 0.005) return;
+        try {
+            if (a1.lastMet === a2.id || Math.random() > 0.005) return;
         
         // Build affinity over time
         a1.affinity = Math.min(1, (a1.affinity || 0) + 0.05);
@@ -374,11 +375,14 @@ class MultiAgentSimulation {
             });
         }
         
-        // Baby making!
-        if (stage === 'committed' && !a1.pregnant && !a2.pregnant && Math.random() < 0.3) {
-            a1.pregnant = true;
-            a1.gestationTimer = this.reproductionRules?.gestationTime || 500;
-            this.logEvent(`💕 ${a1.name} is expecting!`, '#ff69b4');
+            // Baby making!
+            if (stage === 'committed' && !a1.pregnant && !a2.pregnant && Math.random() < 0.3) {
+                a1.pregnant = true;
+                a1.gestationTimer = this.reproductionRules?.gestationTime || 500;
+                this.logEvent(`💕 ${a1.name} is expecting!`, '#ff69b4');
+            }
+        } catch (error) {
+            console.error('❌ Romantic interaction error:', error);
         }
     }
     
@@ -466,7 +470,8 @@ class MultiAgentSimulation {
     
     updateAgents() {
         // Agent behavior
-        this.agents.forEach(agent => {
+        this.agents.forEach((agent, index) => {
+            try {
             // Random movement with personality influence
             const emotionModifier = this.getEmotionModifier(agent.emotionalState);
             const speed = emotionModifier.explorationSpeed;
@@ -545,6 +550,9 @@ class MultiAgentSimulation {
                 if (agent.gestationTimer === 0) {
                     this.spawnBaby(agent);
                 }
+            }
+            } catch (error) {
+                console.error(`❌ Update agent ${index} error:`, error);
             }
         });
         
@@ -804,17 +812,27 @@ class MultiAgentSimulation {
     }
     
     drawCharacter(agent) {
-        const personality = agent.personality ? agent.personality.name : null;
-        const gender = agent.gender;
-        const size = agent.size;
-        const walking = agent.idleTimer < 30;
-        const legSwing = Math.sin(agent.walkCycle) * 0.3;
-        
-        this.ctx.fillStyle = agent.color;
-        
-        // Human agents get gendered visual traits
-        if (gender) {
-            this.drawHumanCharacter(agent, size, walking, legSwing);
+        try {
+            const personality = agent.personality ? agent.personality.name : null;
+            const gender = agent.gender;
+            const size = agent.size || 30;
+            const walking = agent.idleTimer < 30;
+            const legSwing = Math.sin(agent.walkCycle) * 0.3;
+            
+            this.ctx.fillStyle = agent.color || '#6495ff';
+            
+            // Human agents get gendered visual traits
+            if (gender) {
+                this.drawHumanCharacter(agent, size, walking, legSwing);
+                return;
+            }
+        } catch (error) {
+            console.error('❌ Draw character error:', error);
+            // Draw simple circle as fallback
+            this.ctx.fillStyle = '#6495ff';
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            this.ctx.fill();
             return;
         }
         
@@ -1100,17 +1118,23 @@ class MultiAgentSimulation {
     }
     
     animate() {
-        if (!this.paused) {
-            this.time++;
-            this.updateAgents();
-            this.updateParticles();
-            
-            if (this.time % 100 === 0) {
-                this.updateAgentList();
+        try {
+            if (!this.paused) {
+                this.time++;
+                this.updateAgents();
+                this.updateParticles();
+                
+                if (this.time % 100 === 0) {
+                    this.updateAgentList();
+                }
             }
+            
+            this.draw();
+        } catch (error) {
+            console.error('❌ Animation error:', error);
+            console.error('Stack:', error.stack);
+            // Keep animating even if there's an error
         }
-        
-        this.draw();
         requestAnimationFrame(() => this.animate());
     }
 }
