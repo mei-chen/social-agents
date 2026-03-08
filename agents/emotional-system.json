@@ -1,0 +1,168 @@
+{
+  "emotionalStates": {
+    "curious": {
+      "emoji": "🤔",
+      "color": "#64ffda",
+      "affects": {
+        "explorationSpeed": 1.5,
+        "sociability": 0.7,
+        "creativity": 1.2
+      }
+    },
+    "joyful": {
+      "emoji": "😊",
+      "color": "#ffeb3b",
+      "affects": {
+        "explorationSpeed": 1.0,
+        "sociability": 1.5,
+        "creativity": 1.3
+      }
+    },
+    "contemplative": {
+      "emoji": "🧘",
+      "color": "#b388ff",
+      "affects": {
+        "explorationSpeed": 0.5,
+        "sociability": 0.3,
+        "creativity": 1.8
+      }
+    },
+    "energized": {
+      "emoji": "⚡",
+      "color": "#ff6090",
+      "affects": {
+        "explorationSpeed": 2.0,
+        "sociability": 1.2,
+        "creativity": 1.0
+      }
+    },
+    "peaceful": {
+      "emoji": "🌸",
+      "color": "#81c784",
+      "affects": {
+        "explorationSpeed": 0.7,
+        "sociability": 1.0,
+        "creativity": 1.1
+      }
+    },
+    "anxious": {
+      "emoji": "😰",
+      "color": "#ff9800",
+      "affects": {
+        "explorationSpeed": 1.3,
+        "sociability": 0.5,
+        "creativity": 0.7
+      }
+    },
+    "focused": {
+      "emoji": "🎯",
+      "color": "#82b1ff",
+      "affects": {
+        "explorationSpeed": 0.8,
+        "sociability": 0.4,
+        "creativity": 1.5
+      }
+    },
+    "playful": {
+      "emoji": "🎨",
+      "color": "#ff6090",
+      "affects": {
+        "explorationSpeed": 1.4,
+        "sociability": 1.3,
+        "creativity": 1.7
+      }
+    }
+  },
+  
+  "interactionRules": {
+    "Explorer-Builder": {
+      "affinity": 0.7,
+      "outcomes": [
+        "Explorer shares discoveries, Builder sees applications",
+        "Builder creates tools for Explorer's journeys",
+        "Mutual respect through different approaches"
+      ]
+    },
+    "Explorer-Diplomat": {
+      "affinity": 0.8,
+      "outcomes": [
+        "Diplomat encourages Explorer's curiosity",
+        "Explorer brings new perspectives to share",
+        "Natural friendship through shared wonder"
+      ]
+    },
+    "Explorer-Scientist": {
+      "affinity": 0.9,
+      "outcomes": [
+        "Perfect research partnership",
+        "Explorer finds, Scientist analyzes",
+        "Deep intellectual connection"
+      ]
+    },
+    "Explorer-Artist": {
+      "affinity": 0.85,
+      "outcomes": [
+        "Both see beauty in discovery",
+        "Artist captures what Explorer finds",
+        "Inspire each other's work"
+      ]
+    },
+    "Builder-Diplomat": {
+      "affinity": 0.75,
+      "outcomes": [
+        "Diplomat smooths Builder's rough edges",
+        "Builder provides practical support",
+        "Complementary strengths"
+      ]
+    },
+    "Builder-Scientist": {
+      "affinity": 0.85,
+      "outcomes": [
+        "Scientist theorizes, Builder implements",
+        "Shared love of optimization",
+        "Productive collaboration"
+      ]
+    },
+    "Builder-Artist": {
+      "affinity": 0.6,
+      "outcomes": [
+        "Builder sees function, Artist sees form",
+        "Tension creates beautiful solutions",
+        "Learning from differences"
+      ]
+    },
+    "Diplomat-Scientist": {
+      "affinity": 0.5,
+      "outcomes": [
+        "Diplomat brings warmth, Scientist brings logic",
+        "Challenging but growth-inducing",
+        "Diplomat helps Scientist connect"
+      ]
+    },
+    "Diplomat-Artist": {
+      "affinity": 0.9,
+      "outcomes": [
+        "Both deeply emotional and expressive",
+        "Natural soul connection",
+        "Create beauty together"
+      ]
+    },
+    "Scientist-Artist": {
+      "affinity": 0.7,
+      "outcomes": [
+        "Science and art merge",
+        "Artist shows Scientist beauty in data",
+        "Scientist shows Artist patterns in chaos"
+      ]
+    }
+  },
+  
+  "emotionalTransitions": {
+    "positiveInteraction": ["curious", "joyful", "energized"],
+    "deepConversation": ["contemplative", "peaceful", "focused"],
+    "conflict": ["anxious", "focused"],
+    "isolation": ["contemplative", "anxious"],
+    "discovery": ["curious", "energized", "joyful"],
+    "creation": ["focused", "playful", "joyful"]
+  }
+}

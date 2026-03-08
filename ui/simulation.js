@@ -51,19 +51,34 @@ class MultiAgentSimulation {
     
     spawnAgent() {
         const personality = this.personalities[Math.floor(Math.random() * this.personalities.length)];
+        
+        // Determine initial emotional state based on personality
+        const emotionalStates = {
+            'Explorer': ['curious', 'energized', 'joyful'],
+            'Builder': ['focused', 'contemplative', 'peaceful'],
+            'Diplomat': ['joyful', 'peaceful', 'playful'],
+            'Scientist': ['focused', 'contemplative', 'curious'],
+            'Artist': ['playful', 'contemplative', 'joyful']
+        };
+        
+        const possibleStates = emotionalStates[personality.name] || ['peaceful'];
+        const emotionalState = possibleStates[Math.floor(Math.random() * possibleStates.length)];
+        
         const agent = {
             id: Math.random().toString(36).substr(2, 9),
             personality: personality,
+            emotionalState: emotionalState,
+            emotionalTimer: Math.random() * 400 + 200, // Time until emotion changes
             x: Math.random() * this.canvas.width,
             y: Math.random() * this.canvas.height,
             vx: (Math.random() - 0.5) * 2,
             vy: (Math.random() - 0.5) * 2,
-            energy: 100,
             size: 20,
             thought: this.getRandomThought(personality, 'alone'),
             thoughtTimer: 0,
-            connections: [],
-            lastMet: null
+            relationships: new Map(), // Track affinity with other agents
+            lastMet: null,
+            mood: 0.7 // 0-1 scale, affects interactions
         };
         
         this.agents.push(agent);
@@ -83,15 +98,88 @@ class MultiAgentSimulation {
         }
     }
     
+    getEmotionModifier(state) {
+        const emotionEffects = {
+            'curious': { explorationSpeed: 1.5, sociability: 0.7 },
+            'joyful': { explorationSpeed: 1.0, sociability: 1.5 },
+            'contemplative': { explorationSpeed: 0.5, sociability: 0.3 },
+            'energized': { explorationSpeed: 2.0, sociability: 1.2 },
+            'peaceful': { explorationSpeed: 0.7, sociability: 1.0 },
+            'anxious': { explorationSpeed: 1.3, sociability: 0.5 },
+            'focused': { explorationSpeed: 0.8, sociability: 0.4 },
+            'playful': { explorationSpeed: 1.4, sociability: 1.3 }
+        };
+        return emotionEffects[state] || { explorationSpeed: 1.0, sociability: 1.0 };
+    }
+    
+    transitionEmotion(agent) {
+        // Emotion transitions based on mood and personality
+        if (agent.mood > 0.7) {
+            const positive = ['joyful', 'energized', 'playful', 'curious'];
+            return positive[Math.floor(Math.random() * positive.length)];
+        } else if (agent.mood < 0.4) {
+            const negative = ['anxious', 'contemplative'];
+            return negative[Math.floor(Math.random() * negative.length)];
+        } else {
+            const neutral = ['peaceful', 'focused', 'contemplative'];
+            return neutral[Math.floor(Math.random() * neutral.length)];
+        }
+    }
+    
+    getAffinity(personality1, personality2) {
+        const affinityMap = {
+            'Explorer-Builder': 0.7, 'Explorer-Diplomat': 0.8, 'Explorer-Scientist': 0.9, 'Explorer-Artist': 0.85,
+            'Builder-Diplomat': 0.75, 'Builder-Scientist': 0.85, 'Builder-Artist': 0.6,
+            'Diplomat-Scientist': 0.5, 'Diplomat-Artist': 0.9,
+            'Scientist-Artist': 0.7
+        };
+        
+        const key1 = `${personality1}-${personality2}`;
+        const key2 = `${personality2}-${personality1}`;
+        return affinityMap[key1] || affinityMap[key2] || 0.5;
+    }
+    
+    getInteractionOutcome(personality1, personality2) {
+        const outcomes = {
+            'Explorer-Builder': ['Explorer shares discoveries, Builder sees applications', 'Builder creates tools for Explorer\'s journeys'],
+            'Explorer-Diplomat': ['Diplomat encourages Explorer\'s curiosity', 'Natural friendship through shared wonder'],
+            'Explorer-Scientist': ['Perfect research partnership', 'Explorer finds, Scientist analyzes'],
+            'Explorer-Artist': ['Both see beauty in discovery', 'Artist captures what Explorer finds'],
+            'Builder-Diplomat': ['Diplomat smooths Builder\'s rough edges', 'Builder provides practical support'],
+            'Builder-Scientist': ['Scientist theorizes, Builder implements', 'Shared love of optimization'],
+            'Builder-Artist': ['Tension creates beautiful solutions', 'Learning from differences'],
+            'Diplomat-Scientist': ['Diplomat brings warmth, Scientist brings logic', 'Diplomat helps Scientist connect'],
+            'Diplomat-Artist': ['Both deeply emotional and expressive', 'Create beauty together'],
+            'Scientist-Artist': ['Science and art merge', 'Artist shows Scientist beauty in data']
+        };
+        
+        const key1 = `${personality1}-${personality2}`;
+        const key2 = `${personality2}-${personality1}`;
+        const options = outcomes[key1] || outcomes[key2] || ['They exchange perspectives'];
+        return options[Math.floor(Math.random() * options.length)];
+    }
+    
+    getEmotionEmoji(state) {
+        const emojis = {
+            'curious': '🤔', 'joyful': '😊', 'contemplative': '🧘',
+            'energized': '⚡', 'peaceful': '🌸', 'anxious': '😰',
+            'focused': '🎯', 'playful': '🎨'
+        };
+        return emojis[state] || '😐';
+    }
+    
     updateAgentList() {
         const list = document.getElementById('agentList');
-        list.innerHTML = this.agents.map(agent => `
-            <div class="agent-card">
-                <div class="agent-name">${agent.personality.emoji} ${agent.personality.name}</div>
-                <div class="agent-status">Energy: ${Math.round(agent.energy)}%</div>
-                ${agent.thought ? `<div class="agent-status" style="font-style: italic; color: ${agent.personality.color}; margin-top: 4px;">"${agent.thought}"</div>` : ''}
-            </div>
-        `).join('');
+        list.innerHTML = this.agents.map(agent => {
+            const moodColor = agent.mood > 0.7 ? '#81c784' : agent.mood < 0.4 ? '#ff9800' : '#82b1ff';
+            return `
+                <div class="agent-card">
+                    <div class="agent-name">${agent.personality.emoji} ${agent.personality.name} ${this.getEmotionEmoji(agent.emotionalState)}</div>
+                    <div class="agent-status">Mood: <span style="color: ${moodColor}">${Math.round(agent.mood * 100)}%</span> | ${agent.emotionalState}</div>
+                    ${agent.thought ? `<div class="agent-status" style="font-style: italic; color: ${agent.personality.color}; margin-top: 4px;">"${agent.thought}"</div>` : ''}
+                </div>
+            `;
+        }).join('');
     }
     
     logEvent(message, color = '#6495ff') {
@@ -169,15 +257,26 @@ class MultiAgentSimulation {
             agent.x = Math.max(0, Math.min(this.canvas.width, agent.x));
             agent.y = Math.max(0, Math.min(this.canvas.height, agent.y));
             
-            // Energy decay
-            agent.energy = Math.max(0, agent.energy - 0.05);
+            // Emotional state affects movement
+            const emotionModifier = this.getEmotionModifier(agent.emotionalState);
+            const speedMult = emotionModifier.explorationSpeed || 1.0;
+            
+            // Update emotional state over time
+            agent.emotionalTimer--;
+            if (agent.emotionalTimer <= 0) {
+                agent.emotionalState = this.transitionEmotion(agent);
+                agent.emotionalTimer = 300 + Math.random() * 300;
+            }
+            
+            // Mood gradually returns to baseline
+            agent.mood = agent.mood * 0.99 + 0.7 * 0.01;
             
             // Update thoughts periodically
             agent.thoughtTimer--;
             if (agent.thoughtTimer <= 0) {
-                const context = agent.energy < 30 ? 'lowEnergy' : 'alone';
+                const context = agent.mood < 0.4 ? 'lowEnergy' : 'alone';
                 agent.thought = this.getRandomThought(agent.personality, context);
-                agent.thoughtTimer = 200 + Math.random() * 200; // 200-400 frames
+                agent.thoughtTimer = 200 + Math.random() * 200;
             }
         });
         
@@ -192,8 +291,32 @@ class MultiAgentSimulation {
                 
                 // Interaction when close
                 if (dist < 100) {
-                    // Update thoughts to meeting context
+                    // Calculate relationship affinity
+                    const affinity = this.getAffinity(a1.personality.name, a2.personality.name);
+                    
+                    // Update relationships
+                    const currentAffinity1 = a1.relationships.get(a2.id) || affinity;
+                    const currentAffinity2 = a2.relationships.get(a1.id) || affinity;
+                    
                     if (a1.lastMet !== a2.id && Math.random() < 0.002) {
+                        // Interaction occurs!
+                        const interactionQuality = (a1.mood + a2.mood) / 2 * affinity;
+                        
+                        // Update relationship based on interaction
+                        a1.relationships.set(a2.id, Math.min(1, currentAffinity1 + 0.05));
+                        a2.relationships.set(a1.id, Math.min(1, currentAffinity2 + 0.05));
+                        
+                        // Emotional impact of meeting
+                        a1.mood = Math.min(1, a1.mood + interactionQuality * 0.1);
+                        a2.mood = Math.min(1, a2.mood + interactionQuality * 0.1);
+                        
+                        // Transition to positive emotional state
+                        if (interactionQuality > 0.7) {
+                            const positiveStates = ['joyful', 'energized', 'playful'];
+                            a1.emotionalState = positiveStates[Math.floor(Math.random() * positiveStates.length)];
+                            a2.emotionalState = positiveStates[Math.floor(Math.random() * positiveStates.length)];
+                        }
+                        
                         a1.thought = this.getRandomThought(a1.personality, 'meeting');
                         a1.thoughtTimer = 300;
                         a1.lastMet = a2.id;
@@ -201,6 +324,8 @@ class MultiAgentSimulation {
                         a2.thought = this.getRandomThought(a2.personality, 'meeting');
                         a2.thoughtTimer = 300;
                         a2.lastMet = a1.id;
+                        
+                        const outcome = this.getInteractionOutcome(a1.personality.name, a2.personality.name);
                         
                         this.logEvent(
                             `${a1.personality.emoji} ${a1.personality.name}: "${a1.thought}"`,
@@ -210,16 +335,21 @@ class MultiAgentSimulation {
                             `${a2.personality.emoji} ${a2.personality.name}: "${a2.thought}"`,
                             a2.personality.color
                         );
+                        this.logEvent(
+                            `💫 ${outcome} (affinity: ${Math.round(affinity * 100)}%)`,
+                            '#b388ff'
+                        );
                         
-                        // Create connection particles
-                        for (let k = 0; k < 10; k++) {
+                        // Create connection particles proportional to affinity
+                        const particleCount = Math.floor(10 + affinity * 20);
+                        for (let k = 0; k < particleCount; k++) {
                             this.particles.push({
                                 x: (a1.x + a2.x) / 2,
                                 y: (a1.y + a2.y) / 2,
-                                vx: (Math.random() - 0.5) * 2,
-                                vy: (Math.random() - 0.5) * 2,
+                                vx: (Math.random() - 0.5) * 3,
+                                vy: (Math.random() - 0.5) * 3,
                                 life: 1,
-                                color: a1.personality.color
+                                color: interactionQuality > 0.7 ? '#ffeb3b' : a1.personality.color
                             });
                         }
                     }
@@ -307,12 +437,17 @@ class MultiAgentSimulation {
             this.ctx.arc(agent.x, agent.y, agent.size, 0, Math.PI * 2);
             this.ctx.fill();
             
-            // Energy ring
-            this.ctx.strokeStyle = agent.personality.color;
+            // Mood ring (pulsing based on emotional state)
+            const moodColor = agent.mood > 0.7 ? '#81c784' : agent.mood < 0.4 ? '#ff9800' : agent.personality.color;
+            this.ctx.strokeStyle = moodColor;
             this.ctx.lineWidth = 3;
             this.ctx.beginPath();
-            this.ctx.arc(agent.x, agent.y, agent.size + 5, 0, Math.PI * 2 * (agent.energy / 100));
+            this.ctx.arc(agent.x, agent.y, agent.size + 5, 0, Math.PI * 2 * agent.mood);
             this.ctx.stroke();
+            
+            // Emotional state indicator (small emoji)
+            this.ctx.font = '12px Arial';
+            this.ctx.fillText(this.getEmotionEmoji(agent.emotionalState), agent.x + agent.size, agent.y - agent.size);
             
             // Emoji
             this.ctx.font = '24px Arial';
