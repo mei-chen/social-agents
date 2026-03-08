@@ -119,56 +119,24 @@ class MultiAgentSimulation {
     }
     
     spawnAgent() {
-        const personality = this.personalities[Math.floor(Math.random() * this.personalities.length)];
-        
-        // Determine initial emotional state based on personality
-        const emotionalStates = {
-            'Explorer': ['curious', 'energized', 'joyful'],
-            'Builder': ['focused', 'contemplative', 'peaceful'],
-            'Diplomat': ['joyful', 'peaceful', 'playful'],
-            'Scientist': ['focused', 'contemplative', 'curious'],
-            'Artist': ['playful', 'contemplative', 'joyful']
-        };
-        
-        const possibleStates = emotionalStates[personality.name] || ['peaceful'];
-        const emotionalState = possibleStates[Math.floor(Math.random() * possibleStates.length)];
-        
-        const agent = {
-            id: Math.random().toString(36).substr(2, 9),
-            personality: personality,
-            emotionalState: emotionalState,
-            emotionalTimer: Math.random() * 400 + 200,
-            x: 50 + Math.random() * (this.canvas.width - 100),
-            y: 50 + Math.random() * (this.canvas.height - 100),
-            vx: (Math.random() - 0.5) * 2,
-            vy: (Math.random() - 0.5) * 2,
-            size: 20,
-            direction: Math.random() * Math.PI * 2, // Direction they're facing
-            walkCycle: 0, // Animation frame
-            idleTimer: 0, // Time standing still
-            bounceOffset: Math.random() * Math.PI * 2, // For bounce animation
-            thought: this.getRandomThought(personality, 'alone'),
-            thoughtTimer: 0,
-            relationships: new Map(),
-            lastMet: null,
-            mood: 0.7
-        };
-        
-        this.agents.push(agent);
-        this.updateAgentList();
-        this.logEvent(`${personality.emoji} ${personality.name} spawned`, personality.color);
-        
-        // Spawn particles
-        for (let i = 0; i < 20; i++) {
-            this.particles.push({
-                x: agent.x,
-                y: agent.y,
-                vx: (Math.random() - 0.5) * 5,
-                vy: (Math.random() - 0.5) * 5,
-                life: 1,
-                color: personality.color
-            });
+        // Spawn a random human agent
+        if (!this.humanAgents || this.humanAgents.length === 0) {
+            console.error('No human agents available');
+            return;
         }
+        
+        const humanTemplate = this.humanAgents[Math.floor(Math.random() * this.humanAgents.length)];
+        
+        // Create a variant of the template
+        const names = humanTemplate.gender === 'female' ? 
+            ['Emma', 'Aria', 'Nova', 'Zoe', 'Maya'] :
+            ['Leo', 'Kai', 'Finn', 'Zane', 'Max'];
+        const randomName = names[Math.floor(Math.random() * names.length)];
+        
+        this.spawnHuman({
+            ...humanTemplate,
+            name: randomName
+        });
     }
     
     getEmotionModifier(state) {
