@@ -280,10 +280,6 @@ class MultiAgentSimulation {
             agent.x = Math.max(0, Math.min(this.canvas.width, agent.x));
             agent.y = Math.max(0, Math.min(this.canvas.height, agent.y));
             
-            // Emotional state affects movement
-            const emotionModifier = this.getEmotionModifier(agent.emotionalState);
-            const speedMult = emotionModifier.explorationSpeed || 1.0;
-            
             // Update emotional state over time
             agent.emotionalTimer--;
             if (agent.emotionalTimer <= 0) {
