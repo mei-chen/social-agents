@@ -1,0 +1,124 @@
+{
+  "agents": [
+    {
+      "name": "Luna",
+      "gender": "female",
+      "emoji": "👩",
+      "color": "#ff6b9d",
+      "personality": "warm and curious",
+      "traits": {
+        "curiosity": 0.8,
+        "warmth": 0.9,
+        "playfulness": 0.7,
+        "depth": 0.8
+      },
+      "thoughts": {
+        "alone": [
+          "I wonder what today will bring",
+          "The world feels so vast",
+          "Maybe I'll meet someone interesting",
+          "This quiet moment is nice",
+          "I'm ready for adventure"
+        ],
+        "attracted": [
+          "There's something about them...",
+          "My heart is racing",
+          "Should I say something?",
+          "I hope they notice me",
+          "We just... clicked"
+        ],
+        "inLove": [
+          "Everything feels brighter with you",
+          "I can't stop thinking about you",
+          "This feels like home",
+          "You make me want to be better",
+          "I'm so lucky"
+        ],
+        "pregnant": [
+          "A new life is growing inside me",
+          "I wonder what they'll be like",
+          "So much love to give",
+          "We're going to be parents!",
+          "I can feel them moving"
+        ]
+      }
+    },
+    {
+      "name": "Atlas",
+      "gender": "male",
+      "emoji": "👨",
+      "color": "#4a9eff",
+      "personality": "thoughtful and protective",
+      "traits": {
+        "curiosity": 0.7,
+        "warmth": 0.7,
+        "playfulness": 0.6,
+        "depth": 0.9
+      },
+      "thoughts": {
+        "alone": [
+          "What's my purpose here?",
+          "I should explore more",
+          "Life is full of possibility",
+          "Sometimes solitude is good",
+          "I'm ready for connection"
+        ],
+        "attracted": [
+          "She's incredible",
+          "I need to talk to her",
+          "What if she doesn't feel the same?",
+          "This feeling is overwhelming",
+          "I want to know everything about her"
+        ],
+        "inLove": [
+          "I'd do anything for you",
+          "You're my whole world",
+          "I never knew I could feel this way",
+          "Let's build a life together",
+          "Forever sounds perfect with you"
+        ],
+        "expecting": [
+          "I'm going to be a father",
+          "I'll protect you both",
+          "Our family is growing",
+          "I hope I'm ready for this",
+          "So much joy ahead"
+        ]
+      }
+    }
+  ],
+  
+  "relationshipStages": {
+    "stranger": {
+      "affinity": 0,
+      "description": "Haven't met yet"
+    },
+    "noticed": {
+      "affinity": 0.3,
+      "description": "First encounter, curiosity sparked"
+    },
+    "attracted": {
+      "affinity": 0.5,
+      "description": "Drawn to each other, hearts racing"
+    },
+    "dating": {
+      "affinity": 0.7,
+      "description": "Getting to know each other deeply"
+    },
+    "inLove": {
+      "affinity": 0.85,
+      "description": "Deep emotional bond formed"
+    },
+    "committed": {
+      "affinity": 0.95,
+      "description": "Life partners, ready to build together"
+    }
+  },
+  
+  "reproductionRules": {
+    "minimumAffinity": 0.95,
+    "gestationTime": 500,
+    "inheritanceRatio": 0.7,
+    "mutationChance": 0.1
+  }
+}

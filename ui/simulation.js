@@ -16,24 +16,23 @@ class MultiAgentSimulation {
     
     async loadPersonalities() {
         try {
-            const response = await fetch('/agents/personalities.json');
+            const response = await fetch('/agents/human-agents.json');
             const data = await response.json();
-            this.personalities = data.personalities;
+            this.humanAgents = data.agents;
+            this.relationshipStages = data.relationshipStages;
+            this.reproductionRules = data.reproductionRules;
         } catch (error) {
-            // Fallback to basic personalities
-            this.personalities = [
-                { name: 'Explorer', color: '#64ffda', emoji: '🔭', voice: 'curious', thoughts: { alone: ['Exploring...'], meeting: ['Hello!'] } },
-                { name: 'Builder', color: '#ffab40', emoji: '🏗️', voice: 'practical', thoughts: { alone: ['Building...'], meeting: ['Let\'s work!'] } },
-                { name: 'Diplomat', color: '#b388ff', emoji: '🤝', voice: 'warm', thoughts: { alone: ['Connecting...'], meeting: ['Good to see you!'] } },
-                { name: 'Scientist', color: '#82b1ff', emoji: '🔬', voice: 'analytical', thoughts: { alone: ['Analyzing...'], meeting: ['Interesting...'] } },
-                { name: 'Artist', color: '#ff6090', emoji: '🎨', voice: 'poetic', thoughts: { alone: ['Creating...'], meeting: ['Beautiful!'] } }
+            console.error('Failed to load agents:', error);
+            // Fallback
+            this.humanAgents = [
+                { name: 'Luna', gender: 'female', emoji: '👩', color: '#ff6b9d', thoughts: { alone: ['...'], attracted: ['...'], inLove: ['...'] } },
+                { name: 'Atlas', gender: 'male', emoji: '👨', color: '#4a9eff', thoughts: { alone: ['...'], attracted: ['...'], inLove: ['...'] } }
             ];
         }
         
-        // Start with 3 agents after personalities load
-        for (let i = 0; i < 3; i++) {
-            setTimeout(() => this.spawnAgent(), i * 1000);
-        }
+        // Start with Luna and Atlas
+        setTimeout(() => this.spawnHuman(this.humanAgents[0]), 500);
+        setTimeout(() => this.spawnHuman(this.humanAgents[1]), 1500);
         
         this.animate();
     }
@@ -54,6 +53,69 @@ class MultiAgentSimulation {
         const thoughts = personality.thoughts[context];
         if (!thoughts || thoughts.length === 0) return '';
         return thoughts[Math.floor(Math.random() * thoughts.length)];
+    }
+    
+    getHumanThought(human, context = 'alone') {
+        const thoughts = human.thoughts[context];
+        if (!thoughts || thoughts.length === 0) return '';
+        return thoughts[Math.floor(Math.random() * thoughts.length)];
+    }
+    
+    spawnHuman(humanData) {
+        const agent = {
+            id: Math.random().toString(36).substr(2, 9),
+            name: humanData.name,
+            gender: humanData.gender,
+            emoji: humanData.emoji,
+            color: humanData.color,
+            personality: humanData.personality,
+            traits: humanData.traits,
+            thoughts: humanData.thoughts,
+            
+            // Relationship state
+            relationshipStage: 'stranger',
+            affinity: 0,
+            partner: null,
+            pregnant: false,
+            gestationTimer: 0,
+            
+            // Emotional state
+            emotionalState: 'peaceful',
+            emotionalTimer: Math.random() * 400 + 200,
+            mood: 0.7,
+            
+            // Physical state
+            x: 50 + Math.random() * (this.canvas.width - 100),
+            y: 50 + Math.random() * (this.canvas.height - 100),
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: 20,
+            direction: Math.random() * Math.PI * 2,
+            walkCycle: 0,
+            idleTimer: 0,
+            bounceOffset: Math.random() * Math.PI * 2,
+            
+            // Interaction
+            thought: this.getHumanThought(humanData, 'alone'),
+            thoughtTimer: 200,
+            lastMet: null
+        };
+        
+        this.agents.push(agent);
+        this.updateAgentList();
+        this.logEvent(`${agent.emoji} ${agent.name} enters the world`, agent.color);
+        
+        // Spawn particles
+        for (let i = 0; i < 30; i++) {
+            this.particles.push({
+                x: agent.x,
+                y: agent.y,
+                vx: (Math.random() - 0.5) * 5,
+                vy: (Math.random() - 0.5) * 5,
+                life: 1,
+                color: agent.color
+            });
+        }
     }
     
     spawnAgent() {
@@ -179,15 +241,89 @@ class MultiAgentSimulation {
         return emojis[state] || '😐';
     }
     
+    handleRomanticInteraction(a1, a2, dist) {
+        if (a1.lastMet === a2.id || Math.random() > 0.005) return;
+        
+        // Build affinity over time
+        a1.affinity = Math.min(1, (a1.affinity || 0) + 0.05);
+        a2.affinity = Math.min(1, (a2.affinity || 0) + 0.05);
+        
+        a1.partner = a2.id;
+        a2.partner = a1.id;
+        
+        // Determine relationship stage
+        const avgAffinity = (a1.affinity + a2.affinity) / 2;
+        let stage = 'stranger';
+        if (avgAffinity >= 0.95) stage = 'committed';
+        else if (avgAffinity >= 0.85) stage = 'inLove';
+        else if (avgAffinity >= 0.7) stage = 'dating';
+        else if (avgAffinity >= 0.5) stage = 'attracted';
+        else if (avgAffinity >= 0.3) stage = 'noticed';
+        
+        a1.relationshipStage = stage;
+        a2.relationshipStage = stage;
+        
+        // Update thoughts based on stage
+        const context1 = stage === 'inLove' || stage === 'committed' ? 'inLove' : stage === 'attracted' || stage === 'dating' ? 'attracted' : 'alone';
+        const context2 = context1;
+        
+        a1.thought = this.getHumanThought(a1, a1.pregnant ? 'pregnant' : context1);
+        a2.thought = this.getHumanThought(a2, a2.partner && a1.pregnant ? 'expecting' : context2);
+        a1.thoughtTimer = 400;
+        a2.thoughtTimer = 400;
+        
+        a1.lastMet = a2.id;
+        a2.lastMet = a1.id;
+        
+        // Log the interaction
+        this.logEvent(`${a1.emoji} ${a1.name} & ${a2.emoji} ${a2.name}: ${this.getStageDescription(stage)}`, a1.color);
+        
+        // Heart particles
+        const particleCount = Math.floor(10 + avgAffinity * 30);
+        for (let k = 0; k < particleCount; k++) {
+            this.particles.push({
+                x: (a1.x + a2.x) / 2,
+                y: (a1.y + a2.y) / 2 - 20,
+                vx: (Math.random() - 0.5) * 3,
+                vy: -Math.random() * 4 - 2,
+                life: 1,
+                color: avgAffinity > 0.8 ? '#ff69b4' : a1.color
+            });
+        }
+        
+        // Baby making!
+        if (stage === 'committed' && !a1.pregnant && !a2.pregnant && Math.random() < 0.3) {
+            a1.pregnant = true;
+            a1.gestationTimer = this.reproductionRules?.gestationTime || 500;
+            this.logEvent(`💕 ${a1.name} is expecting!`, '#ff69b4');
+        }
+    }
+    
+    getStageDescription(stage) {
+        const descriptions = {
+            'stranger': 'Just met',
+            'noticed': 'Eyes meet for the first time',
+            'attracted': 'Hearts racing',
+            'dating': 'Getting closer',
+            'inLove': 'Deeply in love',
+            'committed': 'Life partners'
+        };
+        return descriptions[stage] || stage;
+    }
+    
     updateAgentList() {
         const list = document.getElementById('agentList');
         list.innerHTML = this.agents.map(agent => {
             const moodColor = agent.mood > 0.7 ? '#81c784' : agent.mood < 0.4 ? '#ff9800' : '#82b1ff';
+            const statusLine = agent.gender ? 
+                `${agent.relationshipStage || 'single'} | Affinity: ${Math.round((agent.affinity || 0) * 100)}%${agent.pregnant ? ' 🤰' : ''}` :
+                `Mood: <span style="color: ${moodColor}">${Math.round(agent.mood * 100)}%</span> | ${agent.emotionalState}`;
+            
             return `
                 <div class="agent-card">
-                    <div class="agent-name">${agent.personality.emoji} ${agent.personality.name} ${this.getEmotionEmoji(agent.emotionalState)}</div>
-                    <div class="agent-status">Mood: <span style="color: ${moodColor}">${Math.round(agent.mood * 100)}%</span> | ${agent.emotionalState}</div>
-                    ${agent.thought ? `<div class="agent-status" style="font-style: italic; color: ${agent.personality.color}; margin-top: 4px;">"${agent.thought}"</div>` : ''}
+                    <div class="agent-name">${agent.emoji} ${agent.name} ${agent.gender ? '' : this.getEmotionEmoji(agent.emotionalState)}</div>
+                    <div class="agent-status">${statusLine}</div>
+                    ${agent.thought ? `<div class="agent-status" style="font-style: italic; color: ${agent.color}; margin-top: 4px;">"${agent.thought}"</div>` : ''}
                 </div>
             `;
         }).join('');
@@ -304,9 +440,28 @@ class MultiAgentSimulation {
             // Update thoughts periodically
             agent.thoughtTimer--;
             if (agent.thoughtTimer <= 0) {
-                const context = agent.mood < 0.4 ? 'lowEnergy' : 'alone';
-                agent.thought = this.getRandomThought(agent.personality, context);
+                if (agent.gender) {
+                    // Human agents
+                    let context = 'alone';
+                    if (agent.pregnant) context = 'pregnant';
+                    else if (agent.partner && agent.relationshipStage === 'committed') context = 'expecting';
+                    else if (agent.relationshipStage === 'inLove' || agent.relationshipStage === 'committed') context = 'inLove';
+                    else if (agent.relationshipStage === 'attracted' || agent.relationshipStage === 'dating') context = 'attracted';
+                    agent.thought = this.getHumanThought(agent, context);
+                } else {
+                    // Other agents
+                    const context = agent.mood < 0.4 ? 'lowEnergy' : 'alone';
+                    agent.thought = this.getRandomThought(agent.personality, context);
+                }
                 agent.thoughtTimer = 200 + Math.random() * 200;
+            }
+            
+            // Pregnancy progression
+            if (agent.pregnant && agent.gestationTimer > 0) {
+                agent.gestationTimer--;
+                if (agent.gestationTimer === 0) {
+                    this.spawnBaby(agent);
+                }
             }
         });
         
@@ -321,8 +476,15 @@ class MultiAgentSimulation {
                 
                 // Interaction when close
                 if (dist < 100) {
+                    // Check if they're human agents (have gender)
+                    if (a1.gender && a2.gender && a1.gender !== a2.gender) {
+                        // Romantic interaction
+                        this.handleRomanticInteraction(a1, a2, dist);
+                        continue;
+                    }
+                    
                     // Calculate relationship affinity
-                    const affinity = this.getAffinity(a1.personality.name, a2.personality.name);
+                    const affinity = a1.personality && a2.personality ? this.getAffinity(a1.personality.name, a2.personality.name) : 0.5;
                     
                     // Update relationships
                     const currentAffinity1 = a1.relationships.get(a2.id) || affinity;
@@ -649,6 +811,82 @@ class MultiAgentSimulation {
             this.ctx.lineTo(size * 0.3, size * 1.2);
             this.ctx.stroke();
         }
+    }
+    
+    spawnBaby(mother) {
+        const partner = this.agents.find(a => a.id === mother.partner);
+        if (!partner) return;
+        
+        const babyGender = Math.random() < 0.5 ? 'male' : 'female';
+        const baby = {
+            id: Math.random().toString(36).substr(2, 9),
+            name: babyGender === 'female' ? `${mother.name}${partner.name[0]}` : `${partner.name}${mother.name[0]}`,
+            gender: babyGender,
+            emoji: babyGender === 'female' ? '👧' : '👦',
+            color: this.blendColors(mother.color, partner.color),
+            personality: `child of ${mother.name} & ${partner.name}`,
+            traits: this.inheritTraits(mother.traits, partner.traits),
+            thoughts: mother.thoughts, // Inherit from mother
+            
+            relationshipStage: 'child',
+            affinity: 0,
+            partner: null,
+            pregnant: false,
+            
+            emotionalState: 'playful',
+            emotionalTimer: 200,
+            mood: 0.9,
+            
+            x: mother.x + (Math.random() - 0.5) * 50,
+            y: mother.y + (Math.random() - 0.5) * 50,
+            vx: (Math.random() - 0.5) * 3,
+            vy: (Math.random() - 0.5) * 3,
+            size: 15, // Smaller baby
+            direction: Math.random() * Math.PI * 2,
+            walkCycle: 0,
+            idleTimer: 0,
+            bounceOffset: Math.random() * Math.PI * 2,
+            
+            thought: '👶 New to the world!',
+            thoughtTimer: 300,
+            lastMet: null
+        };
+        
+        this.agents.push(baby);
+        mother.pregnant = false;
+        
+        this.logEvent(`🎉 ${mother.emoji} ${mother.name} & ${partner.emoji} ${partner.name} had a baby! Welcome ${baby.emoji} ${baby.name}!`, '#ffeb3b');
+        
+        // Celebration particles
+        for (let i = 0; i < 50; i++) {
+            this.particles.push({
+                x: mother.x,
+                y: mother.y,
+                vx: (Math.random() - 0.5) * 6,
+                vy: (Math.random() - 0.5) * 6 - 3,
+                life: 1,
+                color: ['#ffeb3b', '#ff69b4', '#64ffda'][Math.floor(Math.random() * 3)]
+            });
+        }
+    }
+    
+    blendColors(color1, color2) {
+        const hex1 = parseInt(color1.slice(1), 16);
+        const hex2 = parseInt(color2.slice(1), 16);
+        const r = Math.round(((hex1 >> 16) + (hex2 >> 16)) / 2);
+        const g = Math.round((((hex1 >> 8) & 0xFF) + ((hex2 >> 8) & 0xFF)) / 2);
+        const b = Math.round(((hex1 & 0xFF) + (hex2 & 0xFF)) / 2);
+        return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+    }
+    
+    inheritTraits(traits1, traits2) {
+        if (!traits1 || !traits2) return {};
+        const inherited = {};
+        for (const key in traits1) {
+            inherited[key] = (traits1[key] + traits2[key]) / 2 + (Math.random() - 0.5) * 0.1;
+            inherited[key] = Math.max(0, Math.min(1, inherited[key]));
+        }
+        return inherited;
     }
     
     roundRect(x, y, width, height, radius) {
