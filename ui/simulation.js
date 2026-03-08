@@ -87,9 +87,9 @@ class MultiAgentSimulation {
             // Physical state
             x: 50 + Math.random() * (this.canvas.width - 100),
             y: 50 + Math.random() * (this.canvas.height - 100),
-            vx: (Math.random() - 0.5) * 2,
-            vy: (Math.random() - 0.5) * 2,
-            size: 35,  // Much bigger!
+            vx: (Math.random() - 0.5) * 3,
+            vy: (Math.random() - 0.5) * 3,
+            size: 80,  // 4x bigger!
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
             idleTimer: 0,
@@ -357,11 +357,11 @@ class MultiAgentSimulation {
             const speed = emotionModifier.explorationSpeed;
             
             // More natural wandering behavior
-            if (Math.random() < 0.02) {
-                // Change direction occasionally
+            if (Math.random() < 0.05) {
+                // Change direction occasionally (increased frequency)
                 const targetDir = Math.random() * Math.PI * 2;
-                agent.vx = Math.cos(targetDir) * speed;
-                agent.vy = Math.sin(targetDir) * speed;
+                agent.vx = Math.cos(targetDir) * speed * 1.5;
+                agent.vy = Math.sin(targetDir) * speed * 1.5;
             }
             
             // Smooth damping
@@ -385,7 +385,7 @@ class MultiAgentSimulation {
             agent.bounceOffset += 0.05;
             
             // Bounce off edges with padding
-            const padding = 40;
+            const padding = 100;
             if (agent.x < padding || agent.x > this.canvas.width - padding) {
                 agent.vx *= -1;
                 agent.x = Math.max(padding, Math.min(this.canvas.width - padding, agent.x));
@@ -816,7 +816,7 @@ class MultiAgentSimulation {
             y: mother.y + (Math.random() - 0.5) * 50,
             vx: (Math.random() - 0.5) * 3,
             vy: (Math.random() - 0.5) * 3,
-            size: 25, // Baby size
+            size: 60, // Baby size
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
             idleTimer: 0,
