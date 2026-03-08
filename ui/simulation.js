@@ -12,6 +12,107 @@ class MultiAgentSimulation {
         
         this.resize();
         window.addEventListener('resize', () => this.resize());
+        
+        // Drag and drop
+        this.draggedAgent = null;
+        this.setupDragAndDrop();
+    }
+    
+    setupDragAndDrop() {
+        let isDragging = false;
+        
+        this.canvas.addEventListener('mousedown', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Find clicked agent
+            for (let i = this.agents.length - 1; i >= 0; i--) {
+                const agent = this.agents[i];
+                const dx = x - agent.x;
+                const dy = y - agent.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < agent.size * 2) {
+                    this.draggedAgent = agent;
+                    isDragging = true;
+                    this.canvas.style.cursor = 'grabbing';
+                    break;
+                }
+            }
+        });
+        
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (isDragging && this.draggedAgent) {
+                this.draggedAgent.x = x;
+                this.draggedAgent.y = y;
+                this.draggedAgent.vx = 0;
+                this.draggedAgent.vy = 0;
+            } else {
+                // Change cursor on hover
+                let hovering = false;
+                for (const agent of this.agents) {
+                    const dx = x - agent.x;
+                    const dy = y - agent.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < agent.size * 2) {
+                        hovering = true;
+                        break;
+                    }
+                }
+                this.canvas.style.cursor = hovering ? 'grab' : 'default';
+            }
+        });
+        
+        this.canvas.addEventListener('mouseup', () => {
+            if (this.draggedAgent) {
+                this.logEvent(`📍 Placed ${this.draggedAgent.emoji} ${this.draggedAgent.name}`, this.draggedAgent.color);
+            }
+            this.draggedAgent = null;
+            isDragging = false;
+            this.canvas.style.cursor = 'default';
+        });
+        
+        // Touch support for mobile
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            for (let i = this.agents.length - 1; i >= 0; i--) {
+                const agent = this.agents[i];
+                const dx = x - agent.x;
+                const dy = y - agent.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < agent.size * 2) {
+                    this.draggedAgent = agent;
+                    break;
+                }
+            }
+        });
+        
+        this.canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (this.draggedAgent) {
+                const touch = e.touches[0];
+                const rect = this.canvas.getBoundingClientRect();
+                this.draggedAgent.x = touch.clientX - rect.left;
+                this.draggedAgent.y = touch.clientY - rect.top;
+                this.draggedAgent.vx = 0;
+                this.draggedAgent.vy = 0;
+            }
+        });
+        
+        this.canvas.addEventListener('touchend', () => {
+            this.draggedAgent = null;
+        });
     }
     
     async loadPersonalities() {
