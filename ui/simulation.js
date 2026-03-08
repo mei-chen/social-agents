@@ -68,17 +68,21 @@ class MultiAgentSimulation {
             id: Math.random().toString(36).substr(2, 9),
             personality: personality,
             emotionalState: emotionalState,
-            emotionalTimer: Math.random() * 400 + 200, // Time until emotion changes
+            emotionalTimer: Math.random() * 400 + 200,
             x: Math.random() * this.canvas.width,
             y: Math.random() * this.canvas.height,
             vx: (Math.random() - 0.5) * 2,
             vy: (Math.random() - 0.5) * 2,
             size: 20,
+            direction: Math.random() * Math.PI * 2, // Direction they're facing
+            walkCycle: 0, // Animation frame
+            idleTimer: 0, // Time standing still
+            bounceOffset: Math.random() * Math.PI * 2, // For bounce animation
             thought: this.getRandomThought(personality, 'alone'),
             thoughtTimer: 0,
-            relationships: new Map(), // Track affinity with other agents
+            relationships: new Map(),
             lastMet: null,
-            mood: 0.7 // 0-1 scale, affects interactions
+            mood: 0.7
         };
         
         this.agents.push(agent);
@@ -238,17 +242,36 @@ class MultiAgentSimulation {
         // Agent behavior
         this.agents.forEach(agent => {
             // Random movement with personality influence
-            const speed = agent.personality.trait === 'curious' ? 2 : 1;
-            agent.vx += (Math.random() - 0.5) * 0.5 * speed;
-            agent.vy += (Math.random() - 0.5) * 0.5 * speed;
+            const emotionModifier = this.getEmotionModifier(agent.emotionalState);
+            const speed = emotionModifier.explorationSpeed;
             
-            // Damping
-            agent.vx *= 0.95;
-            agent.vy *= 0.95;
+            // More natural wandering behavior
+            if (Math.random() < 0.02) {
+                // Change direction occasionally
+                const targetDir = Math.random() * Math.PI * 2;
+                agent.vx = Math.cos(targetDir) * speed;
+                agent.vy = Math.sin(targetDir) * speed;
+            }
+            
+            // Smooth damping
+            agent.vx *= 0.98;
+            agent.vy *= 0.98;
+            
+            // Update direction based on velocity
+            if (Math.abs(agent.vx) > 0.1 || Math.abs(agent.vy) > 0.1) {
+                agent.direction = Math.atan2(agent.vy, agent.vx);
+                agent.walkCycle += 0.15;
+                agent.idleTimer = 0;
+            } else {
+                agent.idleTimer++;
+            }
             
             // Update position
             agent.x += agent.vx;
             agent.y += agent.vy;
+            
+            // Bounce animation
+            agent.bounceOffset += 0.05;
             
             // Bounce off edges
             if (agent.x < 0 || agent.x > this.canvas.width) agent.vx *= -1;
@@ -419,41 +442,40 @@ class MultiAgentSimulation {
         
         // Draw agents
         this.agents.forEach(agent => {
-            // Glow effect
-            const gradient = this.ctx.createRadialGradient(
-                agent.x, agent.y, 0,
-                agent.x, agent.y, agent.size * 2
-            );
-            gradient.addColorStop(0, agent.personality.color + '40');
+            this.ctx.save();
+            this.ctx.translate(agent.x, agent.y);
+            
+            // Bounce effect when walking
+            const bounce = agent.idleTimer > 30 ? 0 : Math.sin(agent.walkCycle) * 2;
+            this.ctx.translate(0, bounce);
+            
+            // Glow/aura effect
+            const gradient = this.ctx.createRadialGradient(0, 0, 0, 0, 0, agent.size * 2.5);
+            gradient.addColorStop(0, agent.personality.color + '30');
             gradient.addColorStop(1, agent.personality.color + '00');
             this.ctx.fillStyle = gradient;
             this.ctx.beginPath();
-            this.ctx.arc(agent.x, agent.y, agent.size * 2, 0, Math.PI * 2);
+            this.ctx.arc(0, 0, agent.size * 2.5, 0, Math.PI * 2);
             this.ctx.fill();
             
-            // Agent body
-            this.ctx.fillStyle = agent.personality.color;
-            this.ctx.beginPath();
-            this.ctx.arc(agent.x, agent.y, agent.size, 0, Math.PI * 2);
-            this.ctx.fill();
+            // Draw character body
+            this.drawCharacter(agent);
             
-            // Mood ring (pulsing based on emotional state)
+            // Mood indicator (subtle pulse around character)
             const moodColor = agent.mood > 0.7 ? '#81c784' : agent.mood < 0.4 ? '#ff9800' : agent.personality.color;
-            this.ctx.strokeStyle = moodColor;
-            this.ctx.lineWidth = 3;
+            this.ctx.strokeStyle = moodColor + '80';
+            this.ctx.lineWidth = 2;
             this.ctx.beginPath();
-            this.ctx.arc(agent.x, agent.y, agent.size + 5, 0, Math.PI * 2 * agent.mood);
+            const pulseSize = agent.size * 1.5 + Math.sin(this.time * 0.05) * 3;
+            this.ctx.arc(0, 0, pulseSize, 0, Math.PI * 2 * agent.mood);
             this.ctx.stroke();
             
-            // Emotional state indicator (small emoji)
-            this.ctx.font = '12px Arial';
-            this.ctx.fillText(this.getEmotionEmoji(agent.emotionalState), agent.x + agent.size, agent.y - agent.size);
+            // Emotional state indicator (floating emoji)
+            this.ctx.font = '14px Arial';
+            const emotionBob = Math.sin(agent.bounceOffset) * 3;
+            this.ctx.fillText(this.getEmotionEmoji(agent.emotionalState), agent.size + 5, -agent.size - 5 + emotionBob);
             
-            // Emoji
-            this.ctx.font = '24px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(agent.personality.emoji, agent.x, agent.y);
+            this.ctx.restore();
             
             // Thought bubble
             if (agent.thought && agent.thoughtTimer > 0) {
@@ -521,6 +543,105 @@ class MultiAgentSimulation {
         
         if (currentLine) lines.push(currentLine);
         return lines;
+    }
+    
+    drawCharacter(agent) {
+        const personality = agent.personality.name;
+        const size = agent.size;
+        const walking = agent.idleTimer < 30;
+        const legSwing = Math.sin(agent.walkCycle) * 0.3;
+        
+        this.ctx.fillStyle = agent.personality.color;
+        
+        // Body shape varies by personality
+        if (personality === 'Explorer') {
+            // Rounded body with backpack
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, size * 0.7, size * 0.9, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+            // Backpack
+            this.ctx.fillStyle = agent.personality.color + '80';
+            this.ctx.fillRect(-size * 0.8, -size * 0.3, size * 0.3, size * 0.6);
+        } else if (personality === 'Builder') {
+            // Sturdy rectangular body
+            this.ctx.fillRect(-size * 0.6, -size * 0.8, size * 1.2, size * 1.3);
+            // Tool belt
+            this.ctx.fillStyle = '#ffab40';
+            this.ctx.fillRect(-size * 0.7, size * 0.2, size * 1.4, size * 0.2);
+        } else if (personality === 'Diplomat') {
+            // Soft rounded form
+            this.ctx.beginPath();
+            this.ctx.arc(0, -size * 0.2, size * 0.8, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, size * 0.3, size * 0.6, size * 0.5, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+        } else if (personality === 'Scientist') {
+            // Angular, precise shape
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, -size);
+            this.ctx.lineTo(size * 0.6, -size * 0.3);
+            this.ctx.lineTo(size * 0.6, size * 0.5);
+            this.ctx.lineTo(-size * 0.6, size * 0.5);
+            this.ctx.lineTo(-size * 0.6, -size * 0.3);
+            this.ctx.closePath();
+            this.ctx.fill();
+            // Lab coat
+            this.ctx.strokeStyle = '#ffffff80';
+            this.ctx.lineWidth = 3;
+            this.ctx.stroke();
+        } else if (personality === 'Artist') {
+            // Flowing, organic shape
+            this.ctx.beginPath();
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const radius = size * (0.8 + Math.sin(angle * 3 + agent.bounceOffset) * 0.2);
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                if (i === 0) this.ctx.moveTo(x, y);
+                else this.ctx.lineTo(x, y);
+            }
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+        
+        // Head (personality emoji)
+        this.ctx.font = `${size * 1.2}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(agent.personality.emoji, 0, -size * 0.8);
+        
+        // Legs (simple walking animation)
+        if (walking) {
+            this.ctx.strokeStyle = agent.personality.color;
+            this.ctx.lineWidth = 4;
+            this.ctx.lineCap = 'round';
+            
+            // Left leg
+            this.ctx.beginPath();
+            this.ctx.moveTo(-size * 0.3, size * 0.5);
+            this.ctx.lineTo(-size * 0.3 + legSwing * size, size * 1.2);
+            this.ctx.stroke();
+            
+            // Right leg
+            this.ctx.beginPath();
+            this.ctx.moveTo(size * 0.3, size * 0.5);
+            this.ctx.lineTo(size * 0.3 - legSwing * size, size * 1.2);
+            this.ctx.stroke();
+        } else {
+            // Standing still
+            this.ctx.strokeStyle = agent.personality.color;
+            this.ctx.lineWidth = 4;
+            this.ctx.lineCap = 'round';
+            this.ctx.beginPath();
+            this.ctx.moveTo(-size * 0.3, size * 0.5);
+            this.ctx.lineTo(-size * 0.3, size * 1.2);
+            this.ctx.stroke();
+            this.ctx.beginPath();
+            this.ctx.moveTo(size * 0.3, size * 0.5);
+            this.ctx.lineTo(size * 0.3, size * 1.2);
+            this.ctx.stroke();
+        }
     }
     
     roundRect(x, y, width, height, radius) {
