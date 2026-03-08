@@ -119,27 +119,43 @@
             transform: translateY(0);
         }
         
-        #spawn-button {
+        #button-controls {
             position: fixed;
             top: 10px;
             right: 10px;
-            background: linear-gradient(135deg, #64ffda 0%, #48bfe3 100%);
-            border: none;
-            color: #0a0e27;
-            padding: 8px 16px;
+            display: flex;
+            gap: 6px;
+            z-index: 1000;
+        }
+        
+        #button-controls button {
+            background: rgba(20, 25, 45, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            color: #64ffda;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
-            z-index: 1000;
-            box-shadow: 0 4px 16px rgba(100, 255, 218, 0.4);
+            font-size: 12px;
             transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        #button-controls button:hover {
+            background: rgba(30, 35, 55, 0.95);
+            border-color: rgba(100, 150, 255, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        #button-controls button:active {
+            transform: translateY(0);
         }
         
         @media (max-width: 768px) {
-            #spawn-button {
-                font-size: 12px;
-                padding: 6px 12px;
+            #button-controls button {
+                font-size: 11px;
+                padding: 5px 10px;
             }
         }
         
@@ -199,13 +215,15 @@
 <body>
     <canvas id="canvas"></canvas>
     
-    <button id="spawn-button" onclick="simulation.spawnAgent()">+ Spawn Agent</button>
+    <div id="button-controls">
+        <button onclick="simulation.spawnAgent()">+ Spawn</button>
+        <button onclick="simulation.triggerEvent()">⚡ Event</button>
+        <button onclick="simulation.togglePause()">⏯ Pause</button>
+    </div>
     
     <div id="controls">
-        <h2>🌍 Simulation Control</h2>
+        <h2>🌍 Agents</h2>
         <div class="agent-list" id="agentList"></div>
-        <button onclick="simulation.triggerEvent()">⚡ Trigger Event</button>
-        <button onclick="simulation.togglePause()">⏯ Pause/Resume</button>
     </div>
     
     <div id="event-log">
