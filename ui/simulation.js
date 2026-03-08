@@ -99,8 +99,8 @@ class MultiAgentSimulation {
             // Physical state
             x: 50 + Math.random() * (this.canvas.width - 100),
             y: 50 + Math.random() * (this.canvas.height - 100),
-            vx: (Math.random() - 0.5) * 2,
-            vy: (Math.random() - 0.5) * 2,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: (Math.random() - 0.5) * 0.8,
             size: 30,  // Normal size
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
@@ -371,11 +371,11 @@ class MultiAgentSimulation {
             const speed = emotionModifier.explorationSpeed;
             
             // More natural wandering behavior
-            if (Math.random() < 0.05) {
-                // Change direction occasionally (increased frequency)
+            if (Math.random() < 0.03) {
+                // Change direction occasionally
                 const targetDir = Math.random() * Math.PI * 2;
-                agent.vx = Math.cos(targetDir) * speed * 1.5;
-                agent.vy = Math.sin(targetDir) * speed * 1.5;
+                agent.vx = Math.cos(targetDir) * speed * 0.5;
+                agent.vy = Math.sin(targetDir) * speed * 0.5;
             }
             
             // Smooth damping
@@ -834,8 +834,8 @@ class MultiAgentSimulation {
             
             x: mother.x + (Math.random() - 0.5) * 50,
             y: mother.y + (Math.random() - 0.5) * 50,
-            vx: (Math.random() - 0.5) * 2,
-            vy: (Math.random() - 0.5) * 2,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 1.2,
             size: 20, // Baby size
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
