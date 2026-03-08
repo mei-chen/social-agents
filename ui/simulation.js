@@ -99,9 +99,9 @@ class MultiAgentSimulation {
             // Physical state
             x: 50 + Math.random() * (this.canvas.width - 100),
             y: 50 + Math.random() * (this.canvas.height - 100),
-            vx: (Math.random() - 0.5) * 3,
-            vy: (Math.random() - 0.5) * 3,
-            size: 80,  // 4x bigger!
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: 30,  // Normal size
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
             idleTimer: 0,
@@ -399,7 +399,7 @@ class MultiAgentSimulation {
             agent.bounceOffset += 0.05;
             
             // Bounce off edges with padding
-            const padding = 100;
+            const padding = 50;
             if (agent.x < padding || agent.x > this.canvas.width - padding) {
                 agent.vx *= -1;
                 agent.x = Math.max(padding, Math.min(this.canvas.width - padding, agent.x));
@@ -834,9 +834,9 @@ class MultiAgentSimulation {
             
             x: mother.x + (Math.random() - 0.5) * 50,
             y: mother.y + (Math.random() - 0.5) * 50,
-            vx: (Math.random() - 0.5) * 3,
-            vy: (Math.random() - 0.5) * 3,
-            size: 60, // Baby size
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: 20, // Baby size
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
             idleTimer: 0,
