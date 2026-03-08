@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+    <style>
+        body { background: #0a0e27; margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div style="position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.8); padding: 10px;">
+        <div id="status">Loading...</div>
+        <button onclick="testSpawn()" style="margin-top: 10px;">Test Spawn</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const status = document.getElementById('status');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Draw test circle
+        ctx.fillStyle = '#ff6b9d';
+        ctx.beginPath();
+        ctx.arc(400, 300, 100, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText('Test Circle (should be big pink)', 250, 450);
+        
+        status.innerHTML = `Canvas: ${canvas.width}x${canvas.height}<br>If you see a big pink circle, rendering works!`;
+        
+        function testSpawn() {
+            ctx.fillStyle = '#4a9eff';
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            ctx.beginPath();
+            ctx.arc(x, y, 80, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    </script>
+</body>
+</html>

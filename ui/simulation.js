@@ -15,25 +15,36 @@ class MultiAgentSimulation {
     }
     
     async loadPersonalities() {
+        console.log('🔧 Loading personalities...');
         try {
             const response = await fetch('/agents/human-agents.json');
             const data = await response.json();
             this.humanAgents = data.agents;
             this.relationshipStages = data.relationshipStages;
             this.reproductionRules = data.reproductionRules;
+            console.log('✅ Loaded agents:', this.humanAgents.map(a => a.name));
         } catch (error) {
-            console.error('Failed to load agents:', error);
+            console.error('❌ Failed to load agents:', error);
             // Fallback
             this.humanAgents = [
-                { name: 'Luna', gender: 'female', emoji: '👩', color: '#ff6b9d', thoughts: { alone: ['...'], attracted: ['...'], inLove: ['...'] } },
-                { name: 'Atlas', gender: 'male', emoji: '👨', color: '#4a9eff', thoughts: { alone: ['...'], attracted: ['...'], inLove: ['...'] } }
+                { name: 'Luna', gender: 'female', emoji: '👩', color: '#ff6b9d', thoughts: { alone: ['...'], attracted: ['...'], inLove: ['...'], pregnant: ['...'] } },
+                { name: 'Atlas', gender: 'male', emoji: '👨', color: '#4a9eff', thoughts: { alone: ['...'], attracted: ['...'], inLove: ['...'], expecting: ['...'] } }
             ];
+            console.log('⚠️ Using fallback agents');
         }
         
+        console.log('🚀 Spawning Luna and Atlas...');
         // Start with Luna and Atlas
-        setTimeout(() => this.spawnHuman(this.humanAgents[0]), 500);
-        setTimeout(() => this.spawnHuman(this.humanAgents[1]), 1500);
+        setTimeout(() => {
+            console.log('Spawning Luna...');
+            this.spawnHuman(this.humanAgents[0]);
+        }, 500);
+        setTimeout(() => {
+            console.log('Spawning Atlas...');
+            this.spawnHuman(this.humanAgents[1]);
+        }, 1500);
         
+        console.log('🎬 Starting animation...');
         this.animate();
     }
     
@@ -62,6 +73,7 @@ class MultiAgentSimulation {
     }
     
     spawnHuman(humanData) {
+        console.log('👤 Creating agent:', humanData.name, humanData.gender);
         const agent = {
             id: Math.random().toString(36).substr(2, 9),
             name: humanData.name,
@@ -102,6 +114,8 @@ class MultiAgentSimulation {
         };
         
         this.agents.push(agent);
+        console.log(`✨ Agent spawned: ${agent.name} at (${Math.round(agent.x)}, ${Math.round(agent.y)}) size=${agent.size}`);
+        console.log(`📊 Total agents: ${this.agents.length}`);
         this.updateAgentList();
         this.logEvent(`${agent.emoji} ${agent.name} enters the world`, agent.color);
         
@@ -531,6 +545,11 @@ class MultiAgentSimulation {
         // Clear with trail effect
         this.ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Debug: show agent count
+        if (this.time % 60 === 0 && this.agents.length > 0) {
+            console.log(`🎨 Drawing ${this.agents.length} agents`);
+        }
         
         // Draw background grid
         this.ctx.strokeStyle = 'rgba(100, 150, 255, 0.05)';

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+        #debug { white-space: pre; }
+    </style>
+</head>
+<body>
+    <h1>Debug Info</h1>
+    <div id="debug"></div>
+    
+    <script>
+        const debug = document.getElementById('debug');
+        
+        async function test() {
+            try {
+                debug.textContent += '1. Loading human-agents.json...\n';
+                const response = await fetch('/agents/human-agents.json');
+                const data = await response.json();
+                debug.textContent += `2. Loaded ${data.agents.length} agents\n`;
+                debug.textContent += `   - ${data.agents[0].name} (${data.agents[0].gender})\n`;
+                debug.textContent += `   - ${data.agents[1].name} (${data.agents[1].gender})\n`;
+                
+                debug.textContent += '\n3. Loading simulation.js...\n';
+                const simResponse = await fetch('/ui/simulation.js');
+                const simText = await simResponse.text();
+                debug.textContent += `   - File size: ${simText.length} bytes\n`;
+                debug.textContent += `   - Has spawnHuman: ${simText.includes('spawnHuman')}\n`;
+                debug.textContent += `   - Has drawHumanCharacter: ${simText.includes('drawHumanCharacter')}\n`;
+                
+                debug.textContent += '\n4. Success! All files loading correctly.\n';
+            } catch (error) {
+                debug.textContent += `\nERROR: ${error.message}\n`;
+            }
+        }
+        
+        test();
+    </script>
+</body>
+</html>
