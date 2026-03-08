@@ -39,8 +39,15 @@ class MultiAgentSimulation {
     }
     
     resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        // Account for any scrollbars or mobile viewport issues
+        this.canvas.width = Math.min(window.innerWidth, document.documentElement.clientWidth);
+        this.canvas.height = Math.min(window.innerHeight, document.documentElement.clientHeight);
+        
+        // Clamp existing agents to new bounds
+        this.agents.forEach(agent => {
+            agent.x = Math.max(50, Math.min(this.canvas.width - 50, agent.x));
+            agent.y = Math.max(50, Math.min(this.canvas.height - 50, agent.y));
+        });
     }
     
     getRandomThought(personality, context = 'alone') {
@@ -69,8 +76,8 @@ class MultiAgentSimulation {
             personality: personality,
             emotionalState: emotionalState,
             emotionalTimer: Math.random() * 400 + 200,
-            x: Math.random() * this.canvas.width,
-            y: Math.random() * this.canvas.height,
+            x: 50 + Math.random() * (this.canvas.width - 100),
+            y: 50 + Math.random() * (this.canvas.height - 100),
             vx: (Math.random() - 0.5) * 2,
             vy: (Math.random() - 0.5) * 2,
             size: 20,
@@ -273,12 +280,16 @@ class MultiAgentSimulation {
             // Bounce animation
             agent.bounceOffset += 0.05;
             
-            // Bounce off edges
-            if (agent.x < 0 || agent.x > this.canvas.width) agent.vx *= -1;
-            if (agent.y < 0 || agent.y > this.canvas.height) agent.vy *= -1;
-            
-            agent.x = Math.max(0, Math.min(this.canvas.width, agent.x));
-            agent.y = Math.max(0, Math.min(this.canvas.height, agent.y));
+            // Bounce off edges with padding
+            const padding = 40;
+            if (agent.x < padding || agent.x > this.canvas.width - padding) {
+                agent.vx *= -1;
+                agent.x = Math.max(padding, Math.min(this.canvas.width - padding, agent.x));
+            }
+            if (agent.y < padding || agent.y > this.canvas.height - padding) {
+                agent.vy *= -1;
+                agent.y = Math.max(padding, Math.min(this.canvas.height - padding, agent.y));
+            }
             
             // Update emotional state over time
             agent.emotionalTimer--;
