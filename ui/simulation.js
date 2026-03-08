@@ -606,9 +606,10 @@ class MultiAgentSimulation {
             this.ctx.translate(0, bounce);
             
             // Glow/aura effect
+            const agentColor = agent.color || (agent.personality && agent.personality.color) || '#6495ff';
             const gradient = this.ctx.createRadialGradient(0, 0, 0, 0, 0, agent.size * 2.5);
-            gradient.addColorStop(0, agent.personality.color + '30');
-            gradient.addColorStop(1, agent.personality.color + '00');
+            gradient.addColorStop(0, agentColor + '30');
+            gradient.addColorStop(1, agentColor + '00');
             this.ctx.fillStyle = gradient;
             this.ctx.beginPath();
             this.ctx.arc(0, 0, agent.size * 2.5, 0, Math.PI * 2);
@@ -618,7 +619,7 @@ class MultiAgentSimulation {
             this.drawCharacter(agent);
             
             // Mood indicator (subtle pulse around character)
-            const moodColor = agent.mood > 0.7 ? '#81c784' : agent.mood < 0.4 ? '#ff9800' : agent.personality.color;
+            const moodColor = agent.mood > 0.7 ? '#81c784' : agent.mood < 0.4 ? '#ff9800' : agentColor;
             this.ctx.strokeStyle = moodColor + '80';
             this.ctx.lineWidth = 2;
             this.ctx.beginPath();
