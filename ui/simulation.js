@@ -715,12 +715,19 @@ class MultiAgentSimulation {
     }
     
     drawCharacter(agent) {
-        const personality = agent.personality.name;
+        const personality = agent.personality ? agent.personality.name : null;
+        const gender = agent.gender;
         const size = agent.size;
         const walking = agent.idleTimer < 30;
         const legSwing = Math.sin(agent.walkCycle) * 0.3;
         
-        this.ctx.fillStyle = agent.personality.color;
+        this.ctx.fillStyle = agent.color;
+        
+        // Human agents get gendered visual traits
+        if (gender) {
+            this.drawHumanCharacter(agent, size, walking, legSwing);
+            return;
+        }
         
         // Body shape varies by personality
         if (personality === 'Explorer') {
@@ -887,6 +894,106 @@ class MultiAgentSimulation {
             inherited[key] = Math.max(0, Math.min(1, inherited[key]));
         }
         return inherited;
+    }
+    
+    drawHumanCharacter(agent, size, walking, legSwing) {
+        const gender = agent.gender;
+        const isChild = agent.relationshipStage === 'child';
+        const bodySize = isChild ? size * 0.7 : size;
+        
+        if (gender === 'female') {
+            // Female form - curvier silhouette
+            this.ctx.fillStyle = agent.color;
+            
+            // Hair (long)
+            this.ctx.beginPath();
+            this.ctx.arc(-bodySize * 0.4, -bodySize * 1.3, bodySize * 0.5, 0, Math.PI * 2);
+            this.ctx.arc(bodySize * 0.4, -bodySize * 1.3, bodySize * 0.5, 0, Math.PI * 2);
+            this.ctx.arc(0, -bodySize * 1.1, bodySize * 0.7, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            // Head
+            this.ctx.beginPath();
+            this.ctx.arc(0, -bodySize * 1.1, bodySize * 0.6, 0, Math.PI * 2);
+            this.ctx.fillStyle = '#ffd6a5';
+            this.ctx.fill();
+            
+            // Body - dress shape
+            this.ctx.fillStyle = agent.color;
+            this.ctx.beginPath();
+            this.ctx.moveTo(-bodySize * 0.5, -bodySize * 0.4);
+            this.ctx.quadraticCurveTo(-bodySize * 0.6, bodySize * 0.2, -bodySize * 0.8, bodySize * 0.7);
+            this.ctx.lineTo(bodySize * 0.8, bodySize * 0.7);
+            this.ctx.quadraticCurveTo(bodySize * 0.6, bodySize * 0.2, bodySize * 0.5, -bodySize * 0.4);
+            this.ctx.closePath();
+            this.ctx.fill();
+            
+            // Pregnant belly
+            if (agent.pregnant) {
+                this.ctx.fillStyle = agent.color + 'cc';
+                this.ctx.beginPath();
+                this.ctx.arc(0, bodySize * 0.3, bodySize * 0.4, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+            
+        } else if (gender === 'male') {
+            // Male form - broader shoulders, straighter lines
+            this.ctx.fillStyle = agent.color;
+            
+            // Hair (short)
+            this.ctx.beginPath();
+            this.ctx.arc(0, -bodySize * 1.2, bodySize * 0.5, 0, Math.PI);
+            this.ctx.fill();
+            
+            // Head
+            this.ctx.beginPath();
+            this.ctx.arc(0, -bodySize * 1.1, bodySize * 0.6, 0, Math.PI * 2);
+            this.ctx.fillStyle = '#ffd6a5';
+            this.ctx.fill();
+            
+            // Body - rectangular torso with broad shoulders
+            this.ctx.fillStyle = agent.color;
+            this.ctx.fillRect(-bodySize * 0.7, -bodySize * 0.4, bodySize * 1.4, bodySize * 1.0);
+            
+            // Arms (visible at sides)
+            this.ctx.fillRect(-bodySize * 0.9, -bodySize * 0.2, bodySize * 0.2, bodySize * 0.8);
+            this.ctx.fillRect(bodySize * 0.7, -bodySize * 0.2, bodySize * 0.2, bodySize * 0.8);
+        }
+        
+        // Face emoji (same position for both)
+        this.ctx.font = `${bodySize * 0.8}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(agent.emoji, 0, -bodySize * 1.1);
+        
+        // Legs (both genders)
+        this.ctx.strokeStyle = agent.color;
+        this.ctx.lineWidth = isChild ? 3 : 5;
+        this.ctx.lineCap = 'round';
+        
+        if (walking) {
+            // Walking animation
+            this.ctx.beginPath();
+            this.ctx.moveTo(-bodySize * 0.3, bodySize * 0.6);
+            this.ctx.lineTo(-bodySize * 0.3 + legSwing * bodySize, bodySize * 1.3);
+            this.ctx.stroke();
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(bodySize * 0.3, bodySize * 0.6);
+            this.ctx.lineTo(bodySize * 0.3 - legSwing * bodySize, bodySize * 1.3);
+            this.ctx.stroke();
+        } else {
+            // Standing still
+            this.ctx.beginPath();
+            this.ctx.moveTo(-bodySize * 0.3, bodySize * 0.6);
+            this.ctx.lineTo(-bodySize * 0.3, bodySize * 1.3);
+            this.ctx.stroke();
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(bodySize * 0.3, bodySize * 0.6);
+            this.ctx.lineTo(bodySize * 0.3, bodySize * 1.3);
+            this.ctx.stroke();
+        }
     }
     
     roundRect(x, y, width, height, radius) {
