@@ -89,7 +89,7 @@ class MultiAgentSimulation {
             y: 50 + Math.random() * (this.canvas.height - 100),
             vx: (Math.random() - 0.5) * 2,
             vy: (Math.random() - 0.5) * 2,
-            size: 20,
+            size: 35,  // Much bigger!
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
             idleTimer: 0,
@@ -816,7 +816,7 @@ class MultiAgentSimulation {
             y: mother.y + (Math.random() - 0.5) * 50,
             vx: (Math.random() - 0.5) * 3,
             vy: (Math.random() - 0.5) * 3,
-            size: 15, // Smaller baby
+            size: 25, // Baby size
             direction: Math.random() * Math.PI * 2,
             walkCycle: 0,
             idleTimer: 0,
@@ -867,7 +867,7 @@ class MultiAgentSimulation {
     drawHumanCharacter(agent, size, walking, legSwing) {
         const gender = agent.gender;
         const isChild = agent.relationshipStage === 'child';
-        const bodySize = isChild ? size * 0.7 : size;
+        const bodySize = isChild ? size * 0.8 : size;
         
         if (gender === 'female') {
             // Female form - curvier silhouette
